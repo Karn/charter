@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion config.build.compileSdk
+
+    defaultConfig {
+        targetSdkVersion config.build.targetSdk
+        minSdkVersion 21
+
+        applicationId "io.karn.charter.sample"
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner config.testDeps.instrumentationRunner
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation config.deps.kotlin.stdlib
+
+    implementation config.deps.support.compat
+    implementation config.deps.support.appcompat
+
+    implementation project(path: ':library')
+}
+
+// Skip testing and linting.
+tasks.whenTaskAdded { task ->
+    if (task.name == "lint" || task.name.contains("Test")) {
+        task.enabled = false
+    }
+}
