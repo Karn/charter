@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LineChart">
+        <attr name="axisColor" format="color" />
+        <attr name="labelColor" format="color" />
+    </declare-styleable>
+</resources>
