@@ -22,8 +22,8 @@ class LineChart(context: Context, attrs: AttributeSet? = null) : View(context, a
 
     class DataMatrix(val labels: List<String>, var data: List<DataObject>) {
 
-        var dataMax: Float = 0f
-        var dataMin: Float = 0f
+        internal var dataMax: Float = 0f
+        internal var dataMin: Float = 0f
 
         init {
             val allottedSize = labels.size

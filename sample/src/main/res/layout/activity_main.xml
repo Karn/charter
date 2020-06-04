@@ -8,6 +8,8 @@
     tools:context="presentation.MainActivity">
 
     <io.karn.charter.charts.PieChart
+        android:id="@+id/pie_chart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:padding="16dp" />
 </LinearLayout>

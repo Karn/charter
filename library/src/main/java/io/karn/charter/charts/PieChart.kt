@@ -14,6 +14,7 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     // Attributes
     private var textColor: Int = 0
+    private var chartColor: Int = 0
 
 
     private var computedWidth: Int = 0
@@ -27,7 +28,7 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private var rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + computedWidth).toFloat(), (paddingTop + computedWidth).toFloat())
 
-    private val data = arrayListOf(1, 5, 7, 3)
+    private var data = arrayListOf<Int>()
 
     init {
         // Parse styling
@@ -43,9 +44,7 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
          * taken from the DataMatrix object.
          */
         paint = Paint(Paint.ANTI_ALIAS_FLAG).also {
-            it.style = Paint.Style.STROKE
-            it.strokeWidth = Utils.dpToPx(2, context)
-            it.strokeCap = Paint.Cap.ROUND
+            it.color = chartColor
         }
 
         labelHeight = Utils.dpToPx(16, context)
@@ -75,7 +74,7 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
 
         canvas ?: return
 
-        var start = 0F
+        var start = -90F
         val total = data.sum().toDouble()
         for (value in data) {
 
@@ -84,13 +83,25 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
 
             Log.v("TAG", "Drawing: $value, total: $total, prop: $prop, angle: $angle")
 
-            val paint = textPaint
+            val paint = paint
             paint.alpha -= (prop * 100).toInt()
 
             canvas.drawArc(rect, start, angle.toFloat(), true, paint)
             start += angle.toFloat()
         }
 
-        canvas.drawArc(rect, start, 360F, true, textPaint.also { it.alpha = 1 })
+        canvas.drawArc(rect, start, -90F, true, textPaint.also { it.alpha = 1 })
+    }
+
+    fun setChartColor(colorId: Int) {
+        paint.color = this.resources.getColor(colorId)
+
+        invalidate()
+    }
+
+    fun setData(data: ArrayList<Int>) {
+        this.data = data
+
+        invalidate()
     }
 }
