@@ -4,4 +4,8 @@
         <attr name="axisColor" format="color" />
         <attr name="labelColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="PieChart">
+        <attr name="labelColor" />
+    </declare-styleable>
 </resources>

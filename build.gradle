@@ -14,7 +14,7 @@ subprojects {
         }
 
         dependencies {
-            classpath config.build.gradle.androidPlugin
+            classpath 'com.android.tools.build:gradle:3.2.1'
             classpath config.build.gradle.kotlin
 
             // NOTE: Do not place your application configuration here; they belong

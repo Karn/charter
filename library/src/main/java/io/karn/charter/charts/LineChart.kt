@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import io.karn.charter.R
 import io.karn.charter.internal.util.Utils
+import kotlin.math.roundToInt
 
 /**
  * Re-inventing the wheel -- but with cooler spokes.
@@ -219,13 +220,13 @@ class LineChart(context: Context, attrs: AttributeSet? = null) : View(context, a
     private fun nearestDataNode(dataSize: Int, x: Float): Float {
         val interval = computedWidth / if (dataSize == 1) 1 else dataSize - 1
 
-        return interval.toFloat() * (Math.round(x / interval))
+        return interval.toFloat() * ((x / interval).roundToInt())
     }
 
     private fun nearestDateNodeIndex(dataSize: Int, x: Float): Int {
         val interval = computedWidth / if (dataSize == 1) 1 else dataSize - 1
 
-        return Math.min(dataSize - 1, Math.round(x / interval))
+        return Math.min(dataSize - 1, (x / interval).roundToInt())
     }
 
     private fun generateAxis(): Path {
@@ -248,7 +249,7 @@ class LineChart(context: Context, attrs: AttributeSet? = null) : View(context, a
         val xInterval = computedWidth / count
 
         // X yIntervalPath.
-        for (i in 0 until labels.size) {
+        for (i in labels.indices) {
             val textLabel = labels[i]
             val tempPath = Path()
             textPaint.getTextPath(textLabel, 0, textLabel.length, originLeft + i * xInterval, paddingTop.toFloat() + computedHeight + labelHeight, tempPath)
@@ -268,7 +269,7 @@ class LineChart(context: Context, attrs: AttributeSet? = null) : View(context, a
         val interval = computedWidth / if (data.size == 1) 1f else (data.size - 1).toFloat()
 
         var isPreviousZero = false;
-        for (i in 0 until data.size) {
+        for (i in data.indices) {
             // Normalize the dataMatrix to the height of the dataMatrix.
             val z = computedHeight - ((data[i] - min) / (max - min) * computedHeight) + paddingBottom
 
