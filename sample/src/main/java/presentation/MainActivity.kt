@@ -12,6 +12,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         pie_chart.setChartColor(R.color.colorAccent)
-        pie_chart.setData(arrayListOf(1, 3, 6, 9))
+        pie_chart.setData(arrayListOf("a" to 1, "b" to 3, "c" to 6, "d" to 9))
     }
 }

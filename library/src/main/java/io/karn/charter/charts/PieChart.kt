@@ -3,12 +3,14 @@ package io.karn.charter.charts
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import io.karn.charter.R
 import io.karn.charter.internal.util.Utils
+import kotlin.math.cos
+import kotlin.math.sin
 
 class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
@@ -28,7 +30,8 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private var rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + computedWidth).toFloat(), (paddingTop + computedWidth).toFloat())
 
-    private var data = arrayListOf<Int>()
+    // Convert this to something more robust
+    private var data = arrayListOf<Pair<String, Int>>()
 
     init {
         // Parse styling
@@ -75,22 +78,32 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
         canvas ?: return
 
         var start = -90F
-        val total = data.sum().toDouble()
-        for (value in data) {
+        val total = data.sumBy { it.second }.toDouble()
+
+        val paint = paint
+        val originalAlpha = paint.alpha
+
+        for ((label, value) in data) {
 
             val prop = if (total > 0) (value / total) else 0.0
             val angle = if (prop != 0.0) 360.0 * prop else 0.0
 
-            Log.v("TAG", "Drawing: $value, total: $total, prop: $prop, angle: $angle")
-
-            val paint = paint
-            paint.alpha -= (prop * 100).toInt()
+            paint.alpha = originalAlpha - (prop * 255).toInt()
 
             canvas.drawArc(rect, start, angle.toFloat(), true, paint)
             start += angle.toFloat()
         }
 
-        canvas.drawArc(rect, start, -90F, true, textPaint.also { it.alpha = 1 })
+        canvas.drawArc(rect, start, -90F, true, paint.also { it.alpha = 1 })
+
+        paint.alpha = originalAlpha
+    }
+
+    private fun getLabelPoint(center: PointF, angle: Float, radius: Float): PointF {
+        val x = center.x + (radius * sin(angle))
+        val y = center.y + (radius * cos(angle))
+
+        return PointF(x, y)
     }
 
     fun setChartColor(colorId: Int) {
@@ -99,8 +112,10 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
         invalidate()
     }
 
-    fun setData(data: ArrayList<Int>) {
+    fun setData(data: ArrayList<Pair<String, Int>>) {
         this.data = data
+
+        // TODO: Handle caching of proportions and alpha here.
 
         invalidate()
     }
