@@ -6,21 +6,19 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.View
 import io.karn.charter.R
+import io.karn.charter.internal.util.CharterView
 import io.karn.charter.internal.util.Utils
+import io.karn.charter.internal.util.withStyleable
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
-class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
+class PieChart(context: Context, attrs: AttributeSet? = null) : CharterView(context, attrs) {
 
     // Attributes
     private var textColor: Int = 0
     private var chartColor: Int = 0
-
-
-    private var computedWidth: Int = 0
-    private var computedHeight: Int = 0
 
 
     private var labelHeight: Float = 0f
@@ -28,19 +26,16 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
     private val paint: Paint
     private val textPaint: Paint
 
-    private var rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + computedWidth).toFloat(), (paddingTop + computedWidth).toFloat())
+    private var rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + computedHeight).toFloat(), (paddingTop + computedWidth).toFloat())
 
     // Convert this to something more robust
     private var data = arrayListOf<Pair<String, Int>>()
 
     init {
         // Parse styling
-        val styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.PieChart)
-        styledAttrs?.run {
-            // Text color for the labels.
+        attrs.withStyleable(this.context, R.styleable.PieChart) {
             textColor = this.getColor(R.styleable.PieChart_labelColor, resources.getColor(android.R.color.primary_text_light))
         }
-        styledAttrs.recycle()
 
         /*
          * Initialize the paint object used to draw the data segments. The color of the segment is
@@ -62,14 +57,14 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
         }
     }
 
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        computedHeight = (h - paddingTop - paddingBottom - labelHeight).toInt()
-        computedWidth = (w - paddingStart - paddingEnd)
+        // TODO: Define terminology around workable area. e.g is width actually view width - insets?
+        // Since a pie chart is a circle the boundaries are the smallest working space
+        val diameter = min(computedWidth, computedHeight)
 
-        rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + computedWidth).toFloat(), (paddingTop + computedWidth).toFloat())
+        rect = RectF(paddingStart.toFloat(), paddingTop.toFloat(), (paddingStart + diameter).toFloat(), (paddingTop + diameter).toFloat())
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -88,12 +83,13 @@ class PieChart(context: Context, attrs: AttributeSet? = null) : View(context, at
             val prop = if (total > 0) (value / total) else 0.0
             val angle = if (prop != 0.0) 360.0 * prop else 0.0
 
-            paint.alpha = originalAlpha - (prop * 255).toInt()
+            paint.alpha = originalAlpha - (prop * originalAlpha).toInt()
 
             canvas.drawArc(rect, start, angle.toFloat(), true, paint)
             start += angle.toFloat()
         }
 
+        // Catch straggler
         canvas.drawArc(rect, start, -90F, true, paint.also { it.alpha = 1 })
 
         paint.alpha = originalAlpha

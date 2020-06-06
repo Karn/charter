@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import io.karn.charter.R
 import io.karn.charter.internal.util.Utils
+import io.karn.charter.internal.util.withStyleable
 import kotlin.math.roundToInt
 
 /**
@@ -79,14 +80,12 @@ class LineChart(context: Context, attrs: AttributeSet? = null) : View(context, a
 
     init {
         // Parse styling
-        val styledAttrs = context.obtainStyledAttributes(attrs, R.styleable.LineChart)
-        styledAttrs?.run {
+        attrs.withStyleable(this.context, R.styleable.LineChart) {
             // Just the x-y axis colors.
             axisColor = this.getColor(R.styleable.LineChart_axisColor, resources.getColor(android.R.color.darker_gray))
             // Text color for the labels.
             textColor = this.getColor(R.styleable.LineChart_labelColor, resources.getColor(android.R.color.primary_text_light))
         }
-        styledAttrs.recycle()
 
         /*
          * Initialize the paint object used to draw the axis.
